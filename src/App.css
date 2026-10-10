@@ -170,6 +170,9 @@ tbody tr:hover:not(.loading-row) { background: #fcfdfd; }
 .login-panel { display: flex; width: min(100%, 420px); flex-direction: column; justify-content: center; justify-self: center; padding: 42px 30px; }
 .login-panel .brand-mark { margin-bottom: 28px; }.login-panel h1 { font-size: 26px; }.login-copy { margin: 8px 0 25px; color: #7d8998; font-size: 12px; }
 .login-form { display: grid; gap: 15px; }.login-form label { display: grid; gap: 7px; color: #43546a; font-size: 11px; font-weight: 600; }.login-form input { height: 41px; padding: 0 11px; border: 1px solid #e0e5ea; border-radius: 5px; color: #27384d; background: #fff; font-size: 12px; }
+.password-field-wrap { position: relative; display: flex; align-items: center; }
+.password-field-wrap input { width: 100%; padding-right: 52px; }
+.password-toggle { position: absolute; right: 8px; border: 0; background: transparent; color: #60708a; cursor: pointer; font-size: 10px; font-weight: 600; }
 .login-submit { min-height: 41px; margin-top: 3px; font-size: 12px; }.login-foot { display: flex; align-items: center; gap: 7px; margin-top: 24px; color: #92a0ae; font-size: 10px; }
 .login-side { position: relative; display: flex; min-height: 100vh; flex-direction: column; justify-content: center; overflow: hidden; padding: 12%; color: #fff; background: #172b40; }
 .login-side::before { position: absolute; right: -100px; bottom: -190px; width: 450px; height: 450px; border: 1px solid #53667a6b; border-radius: 50%; content: ''; box-shadow: 0 0 0 44px #263a4d55, 0 0 0 89px #263a4d40; }

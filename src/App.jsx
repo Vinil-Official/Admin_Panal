@@ -24,12 +24,25 @@ const statsConfig = [
   { label: 'Deals', key: 'deals', icon: BarChart3, tone: 'rose' },
 ]
 
+const ADMIN_LOGIN_KEY = 'northstar-admin-logged-in'
+const HARD_CODED_USERNAME = 'techiecrew'
+const HARD_CODED_PASSWORD = 'techie123'
+
 function App() {
-  const [session, setSession] = useState(null)
-  const [authReady, setAuthReady] = useState(!supabase)
+  const [session, setSession] = useState(() => {
+    try {
+      return localStorage.getItem(ADMIN_LOGIN_KEY) === 'true'
+        ? { user: { id: 'hardcoded-admin-user', email: HARD_CODED_USERNAME, app_metadata: { role: 'admin' } } }
+        : null
+    } catch {
+      return null
+    }
+  })
+  const [authReady, setAuthReady] = useState(true)
   const [authError, setAuthError] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [authBusy, setAuthBusy] = useState(false)
   const [activeView, setActiveView] = useState('Dashboard')
   const [leads, setLeads] = useState([])
@@ -55,6 +68,18 @@ function App() {
   const loading = authorized && loadedRequestKey !== requestKey
 
   useEffect(() => {
+    try {
+      if (session?.user?.app_metadata?.role === 'admin') {
+        localStorage.setItem(ADMIN_LOGIN_KEY, 'true')
+      } else {
+        localStorage.removeItem(ADMIN_LOGIN_KEY)
+      }
+    } catch {
+      // Ignore localStorage access failures and fall back to in-memory auth only.
+    }
+  }, [session])
+
+  useEffect(() => {
     if (!supabase) return
     let alive = true
     supabase.auth.getSession().then(({ data, error }) => {
@@ -63,7 +88,7 @@ function App() {
       if (data?.session && data.session.user.app_metadata?.role !== 'admin') {
         setAuthError('This account is not authorized for admin access. Ask an administrator to grant the trusted admin role.')
       }
-      setSession(data?.session ?? null)
+      setSession((currentSession) => currentSession ?? (data?.session ?? null))
       setAuthReady(true)
     })
     const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
@@ -79,7 +104,7 @@ function App() {
   }, [])
 
   useEffect(() => {
-    if (session && !authorized) {
+    if (session && !authorized && supabase) {
       supabase.auth.signOut()
     }
   }, [session, authorized])
@@ -204,14 +229,19 @@ function App() {
 
   async function signIn(event) {
     event.preventDefault()
-    if (!supabase) return
     setAuthBusy(true)
     setAuthError('')
-    if (import.meta.env.DEV && email.trim() === 'techiecrew' && password === 'techie123') {
-      await supabase.auth.signOut()
+
+    if (!email.trim() || !password.trim()) {
+      setAuthError('Please enter both username and password.')
+      setAuthBusy(false)
+      return
+    }
+
+    if (email.trim() === HARD_CODED_USERNAME && password === HARD_CODED_PASSWORD) {
       setSession({
         user: {
-          id: 'local-development-user',
+          id: 'hardcoded-admin-user',
           email: email.trim(),
           app_metadata: { role: 'admin' },
         },
@@ -219,31 +249,24 @@ function App() {
       setAuthBusy(false)
       return
     }
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) {
-      setAuthError(error.message)
-    } else if (data.user?.app_metadata?.role !== 'admin') {
-      await supabase.auth.signOut()
-      setAuthError('This account is not authorized for admin access.')
-    } else {
-      setSession(data.session)
-    }
+
+    setAuthError('Invalid username or password')
     setAuthBusy(false)
   }
 
   async function signOut() {
-    await supabase.auth.signOut()
+    if (supabase) {
+      await supabase.auth.signOut()
+    }
     setSession(null)
+    setAuthError('')
     setLeads([])
     setStats(null)
+    setEmail('')
+    setPassword('')
+    setShowPassword(false)
   }
 
-  if (!supabase) {
-    return <SetupNotice />
-  }
-  if (!authReady) {
-    return <div className="boot-screen"><LoaderCircle className="spin" size={26} />Checking admin session</div>
-  }
   if (!authorized) {
     return <main className="login-screen">
       <div className="login-panel">
@@ -251,18 +274,29 @@ function App() {
         <p className="eyebrow">LEAD OPERATIONS</p>
         <h1>Admin sign in</h1>
         <p className="login-copy">Sign in with your authorized administrator account.</p>
-        <form onSubmit={signIn} className="login-form">
-          <label>Email or local test username<input type="text" autoComplete="username" required value={email} onChange={(event) => setEmail(event.target.value)} /></label>
-          <label>Password<input type="password" autoComplete="current-password" required value={password} onChange={(event) => setPassword(event.target.value)} /></label>
+        <form onSubmit={signIn} className="login-form" noValidate>
+          <label>
+            Username
+            <input type="text" autoComplete="username" required value={email} onChange={(event) => setEmail(event.target.value)} placeholder="techiecrew" />
+          </label>
+          <label>
+            Password
+            <div className="password-field-wrap">
+              <input type={showPassword ? 'text' : 'password'} autoComplete="current-password" required value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Enter password" />
+              <button type="button" className="password-toggle" onClick={() => setShowPassword((value) => !value)} aria-label={showPassword ? 'Hide password' : 'Show password'}>
+                {showPassword ? 'Hide' : 'Show'}
+              </button>
+            </div>
+          </label>
           {authError && <div className="inline-error"><CircleAlert size={16} />{authError}</div>}
           <button className="button button-primary login-submit" disabled={authBusy}>
             {authBusy ? <LoaderCircle size={17} className="spin" /> : <ShieldCheck size={17} />}
             Sign in securely
           </button>
         </form>
-        <div className="login-foot"><ShieldCheck size={14} />{import.meta.env.DEV ? 'Local test login only; database access still depends on RLS.' : 'Admin access is verified against trusted account metadata'}</div>
+        <div className="login-foot"><ShieldCheck size={14} />Hardcoded prototype login for admin access</div>
       </div>
-      <div className="login-side"><span className="side-kicker">PIPELINE OVERVIEW</span><h2>Every lead,<br />in one clear view.</h2><p>Track qualification, activity, and deal progress from your existing Supabase records.</p><div className="side-stat"><span>LIVE DATA</span><strong>Supabase connected</strong></div></div>
+      <div className="login-side"><span className="side-kicker">PIPELINE OVERVIEW</span><h2>Every lead,<br />in one clear view.</h2><p>Track qualification, activity, and deal progress from your existing Supabase records.</p><div className="side-stat"><span>LIVE DATA</span><strong>{supabase ? 'Supabase connected' : 'Local demo mode'}</strong></div></div>
     </main>
   }
 
