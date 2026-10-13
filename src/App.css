@@ -24,7 +24,8 @@
 }
 
 * { box-sizing: border-box; }
-body { min-width: 360px; margin: 0; }
+html, body { margin: 0; min-width: 0; }
+body { overflow-x: hidden; }
 button, input, select, textarea { font: inherit; }
 button { color: inherit; }
 button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid #efb09f; outline-offset: 2px; }
@@ -203,17 +204,20 @@ tbody tr:hover:not(.loading-row) { background: #fcfdfd; }
   .stat-card { min-height: 108px; padding: 12px 10px 10px; grid-template-columns: 31px 1fr; column-gap: 8px; }
   .stat-icon { width: 30px; height: 30px; }.stat-icon svg { width: 16px; }
   .stat-label { font-size: 10px; }.stat-value { font-size: 21px; }
+  .table-panel { overflow: hidden; }
   .table-heading { padding-right: 13px; padding-left: 13px; }
-  .table-toolbar { flex-wrap: wrap; padding: 9px 12px; }
-  .search-box { max-width: none; flex-basis: 100%; }
-  .filter-select, .sort-select { flex: 1; justify-content: center; }.filter-select select, .sort-select select { max-width: none; }
+  .table-toolbar { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 8px; padding: 9px 12px; }
+  .search-box { grid-column: 1 / -1; max-width: none; flex-basis: 100%; }
+  .filter-select, .sort-select { min-width: 0; }
+  .filter-select select, .sort-select select { width: 100%; max-width: none; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { min-width: 760px; }
   .table-footer { padding-right: 11px; padding-left: 12px; }
   .login-screen { grid-template-columns: 1fr; }
   .login-panel { min-height: 100vh; padding: 35px 25px; }
   .login-side { display: none; }
 }
 @media (max-width: 480px) {
-  body { min-width: 320px; }
   .topbar { height: 58px; padding: 0 12px; }
   .breadcrumbs { gap: 6px; font-size: 9px; }
   .topbar-right { gap: 8px; }
@@ -223,7 +227,6 @@ tbody tr:hover:not(.loading-row) { background: #fcfdfd; }
   .stat-card { min-height: 104px; }
   .export-button { min-height: 32px; padding: 0 8px; font-size: 10px; }
   .table-toolbar { gap: 6px; }
-  .table-toolbar > * { flex: 1 1 100%; }
   .filter-select, .sort-select { min-width: 0; }
   .table-footer { align-items: flex-start; gap: 8px; padding-top: 10px; padding-bottom: 9px; font-size: 9px; }
   .pagination { gap: 3px; font-size: 9px; }
