@@ -2,9 +2,6 @@ import * as XLSX from 'xlsx'
 import { getAllLeads } from '../services/leadsService'
 
 const exportColumns = [
-  ['id', 'ID'],
-  ['source_lead_id', 'Source Lead ID'],
-  ['owner_id', 'Owner ID'],
   ['name', 'Business Name'],
   ['phone', 'Phone Number'],
   ['location', 'Location'],
@@ -33,10 +30,10 @@ export async function exportLeadsToExcel(filters = {}) {
     cellDates: true,
   })
   worksheet['!cols'] = [
-    { wch: 38 }, { wch: 24 }, { wch: 38 }, { wch: 30 }, { wch: 20 }, { wch: 26 },
-    { wch: 34 }, { wch: 24 }, { wch: 14 }, { wch: 44 }, { wch: 22 }, { wch: 22 },
+    { wch: 38 }, { wch: 22 }, { wch: 30 }, { wch: 28 }, { wch: 26 },
+    { wch: 18 }, { wch: 44 }, { wch: 22 }, { wch: 22 },
   ]
-  worksheet['!autofilter'] = { ref: worksheet['!ref'] || 'A1:L1' }
+  worksheet['!autofilter'] = { ref: worksheet['!ref'] || 'A1:I1' }
   const workbook = XLSX.utils.book_new()
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Qualified Leads')
   const date = new Date().toISOString().slice(0, 10)
