@@ -188,16 +188,26 @@ tbody tr:hover:not(.loading-row) { background: #fcfdfd; }
   .topbar { padding-right: 26px; padding-left: 26px; }
 }
 @media (max-width: 780px) {
+  .app-shell { background: #121b26; }
   .sidebar { width: 230px; transform: translateX(-100%); transition: transform .22s ease; }
   .sidebar.sidebar-open { transform: translateX(0); }
   .mobile-scrim { position: fixed; inset: 0; z-index: 4; display: block; border: 0; background: #11223577; }
-  .main-area { margin-left: 0; }
-  .topbar { height: 58px; padding: 0 16px; }
-  .mobile-menu-button { display: inline-grid; margin-right: 8px; }
-  .breadcrumbs { flex: 1; gap: 7px; font-size: 10px; }
+  .main-area { margin-left: 0; background: #f3f5f7; }
+  .topbar {
+    height: 72px;
+    padding: 10px 16px 12px;
+    border-bottom: 0;
+    background: rgba(14, 22, 29, 0.98);
+    color: #fff;
+  }
+  .mobile-menu-button { display: inline-grid; margin-right: 8px; color: #f4f7fb; }
+  .breadcrumbs { flex: 1; gap: 7px; font-size: 10px; color: #c3d0dc; }
+  .breadcrumbs strong { color: #edf3fb; }
   .topbar-right { gap: 10px; }
-  .page-content { padding: 24px 16px 20px; }
-  .page-heading { align-items: center; margin-bottom: 20px; }
+  .live-indicator { color: #dfeaf5; }
+  .topbar-avatar { width: 28px; height: 28px; border-color: rgba(255,255,255,.18); color: #f1d7cc; background: rgba(255,255,255,.08); }
+  .page-content { padding: 18px 14px 20px; }
+  .page-heading { align-items: center; margin-bottom: 18px; }
   .page-heading h1 { font-size: 23px; }
   .page-subtitle { max-width: 270px; font-size: 10px; line-height: 1.5; }
   .stats-grid { gap: 9px; margin-bottom: 17px; }
@@ -211,7 +221,10 @@ tbody tr:hover:not(.loading-row) { background: #fcfdfd; }
   .filter-select, .sort-select { min-width: 0; }
   .filter-select select, .sort-select select { width: 100%; max-width: none; }
   .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  table { min-width: 760px; }
+  table { min-width: 100%; }
+  thead th:nth-child(4), thead th:nth-child(5), thead th:nth-child(6), thead th:nth-child(7),
+  tbody td:nth-child(4), tbody td:nth-child(5), tbody td:nth-child(6), tbody td:nth-child(7) { display: none; }
+  th, td { white-space: normal; }
   .table-footer { padding-right: 11px; padding-left: 12px; }
   .login-screen { grid-template-columns: 1fr; }
   .login-panel { min-height: 100vh; padding: 35px 25px; }
